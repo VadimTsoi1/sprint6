@@ -10,25 +10,22 @@ import (
 	"github.com/Yandex-Practicum/go1fl-sprint6-final/internal/service"
 )
 
-// HandleRoot отправляет html форму из index.html
+// HandleRoot отдаёт файл index.html из папки cmd
 func HandleRoot(w http.ResponseWriter, r *http.Request) {
-	// Получаем путь до текущей рабочей директории
 	wd, err := os.Getwd()
 	if err != nil {
 		http.Error(w, "не удалось получить рабочую директорию", http.StatusInternalServerError)
 		return
 	}
 
-	// Собираем путь до index.html на уровень выше
-	path := filepath.Join(wd, "..", "index.html")
+	path := filepath.Join(wd, "cmd", "index.html")
 
-	// Отдаем файл как ответ
 	http.ServeFile(w, r, path)
 }
 
 // HandleUpload обрабатывает загрузку файла
 func HandleUpload(w http.ResponseWriter, r *http.Request) {
-	err := r.ParseMultipartForm(10 << 20) // ограничение на размер файла: 10 МБ
+	err := r.ParseMultipartForm(10 << 20) // 10 МБ
 	if err != nil {
 		http.Error(w, "Ошибка при разборе формы", http.StatusInternalServerError)
 		return
@@ -54,7 +51,7 @@ func HandleUpload(w http.ResponseWriter, r *http.Request) {
 	}
 
 	filename := time.Now().UTC().Format("20060102150405") + ".txt"
-	fullPath := filepath.Join(".", filename)
+	fullPath := filepath.Join(wd, filename)
 
 	err = os.WriteFile(fullPath, []byte(result), 0644)
 	if err != nil {
@@ -64,5 +61,4 @@ func HandleUpload(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte(result))
-
 }
