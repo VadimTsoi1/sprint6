@@ -12,15 +12,14 @@ import (
 
 // HandleRoot отправляет html форму из index.html
 func HandleRoot(w http.ResponseWriter, r *http.Request) {
-	// Получаем путь до текущей рабочей директории
 	wd, err := os.Getwd()
 	if err != nil {
 		http.Error(w, "не удалось получить рабочую директорию", http.StatusInternalServerError)
 		return
 	}
 
-	// Собираем путь до index.html на уровень выше
-	path := filepath.Join(wd, "..", "index.html")
+	// Путь к index.html в текущей рабочей директории (НЕ поднимаемся выше!)
+	path := filepath.Join(wd, "index.html")
 
 	// Отдаем файл как ответ
 	http.ServeFile(w, r, path)
@@ -64,5 +63,4 @@ func HandleUpload(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte(result))
-
 }
