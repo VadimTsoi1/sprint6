@@ -10,7 +10,7 @@ import (
 	"github.com/Yandex-Practicum/go1fl-sprint6-final/internal/service"
 )
 
-// HandleRoot отдаёт index.html, который лежит на уровень выше от internal/handlers
+// HandleRoot отправляет html форму из index.html
 func HandleRoot(w http.ResponseWriter, r *http.Request) {
 	wd, err := os.Getwd()
 	if err != nil {
@@ -18,19 +18,16 @@ func HandleRoot(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	path := filepath.Join(wd, "..", "index.html")
+	// Путь к index.html в текущей рабочей директории (НЕ поднимаемся выше!)
+	path := filepath.Join(wd, "index.html")
 
-	if _, err := os.Stat(path); os.IsNotExist(err) {
-		http.Error(w, "Файл не найден", http.StatusNotFound)
-		return
-	}
-
+	// Отдаем файл как ответ
 	http.ServeFile(w, r, path)
 }
 
-// HandleUpload обрабатывает загрузку файла и конвертацию
+// HandleUpload обрабатывает загрузку файла
 func HandleUpload(w http.ResponseWriter, r *http.Request) {
-	err := r.ParseMultipartForm(10 << 20)
+	err := r.ParseMultipartForm(10 << 20) // ограничение на размер файла: 10 МБ
 	if err != nil {
 		http.Error(w, "Ошибка при разборе формы", http.StatusInternalServerError)
 		return
